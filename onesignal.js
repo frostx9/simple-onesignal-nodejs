@@ -8,7 +8,7 @@ const client = new OneSignal.Client(
 
 module.exports = {
 
-  async sendNotification(playerIds, content) {
+  async sendNotificationWithPackage(playerIds, content) {
     try {
       const notification = {
         contents: {
@@ -27,39 +27,32 @@ module.exports = {
         console.log(error.body)
       }
     }
-  }
+  },
 
-  // async sendNotification(playerIds, content) {   // Still Not Working
-  //   try {
-  //     const options = {
-  //       method: "POST",
-  //       url: "https://onesignal.com/api/v1/notifications",
-  //       headers: {
-  //         accept: "application/json",
-  //         Authorization: `Basic ${process.env.ONESIGNAL_APPKEY} `,
-  //         "content-type": "application/json"
-  //       },
-  //       data: {
-  //         included_segments: playerIds,
-  //         contents: { en: content },
-  //       }
-  //     }
-  //     console.log(options)
-  //     if (playerIds && playerIds.length) {
-  //        axios.request(options)
-  //        .then((response) => {
-  //         console.log(response.data)
-  //       })
-  //       .catch((error) => {
-  //         console.error(error)
-  //       })
-  //     }
-  //   } catch (error) {
-  //     if (error instanceof OneSignal.HTTPError) {
-  //       console.log(error.statusCode)
-  //       console.log(error.body)
-  //     }
-  //   }
-  // }
+  async sendNotificationWithAxios(playerIds, head, body) {
+    const sendData = {
+      app_id: process.env.ONESIGNAL_APPID,
+      headings: {
+        en: head
+      },
+      contents: {
+        en: body
+      },
+      include_player_ids: playerIds,
+
+    }
+    axios.post(process.env.ONESIGNAL_BASE_URL, sendData, {
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+        Authorization: `Basic ${process.env.ONESIGNAL_APPKEY}`
+      }
+    })
+      .then((response) => {
+        console.log(response.data)
+      })
+      .catch((error) => {
+        console.error(error)
+      })
+  }
 
 }
